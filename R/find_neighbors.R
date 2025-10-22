@@ -2,28 +2,35 @@
 #'
 #' Finding neighbors of nodes in a graph.
 #'
-#' @param g An undirected graph represented as an igraph object.
+#' @param g A symmetric adjacency matrix representing the undirected graph.
 #'
 #' @return a list. Each list element represents a graph node and contains its neighboring nodes.
 #'
 #' @examples
 #'
-#' g <- igraph::make_graph(c(1,2,2,3,3,1,3,4,4,5,5,6,6,3,6,4), directed=F)
+#' set.seed(1)
+#' g <- as.matrix(igraph::as_adjacency_matrix(igraph::sample_gnp(6, 0.7)))
+#' colnames(g) <- rownames(g) <- paste0('X',1:6)
 #'
 #' ng <- find_neighbors(g)
 #'
 
-find_neighbors = function(g){
+find_neighbors = function(graph){
 
-  if(!igraph::is_igraph(g)){
-    stop('Not an igraph object.')
+  if(!isSymmetric(graph)){
+    stop('The adjacency matrix is not symmetric.')
   }
+  g_nodes = colnames(graph)
 
-  if(igraph::is_directed(g)){
-    stop('Not an undirected graph.')
-  }
+  out = lapply(1:length(g_nodes), function(g){
 
-  g_nodes = igraph::V(g)
-  out = lapply(g_nodes, function(node) igraph::neighbors(g, node))
+    gcol = graph[, which(colnames(graph) == g_nodes[g])]
+    gnei = g_nodes[which(gcol == 1)]
+    gnei
+
+  })
+
+  names(out) = g_nodes
+
   return(out)
 }
