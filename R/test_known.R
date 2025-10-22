@@ -3,7 +3,7 @@
 #'
 #' Function to fit node-conditional models for comparison and calculate p-values for the two stages.
 #'
-#' @param g A symmetric adjacency matrix representing the undirected graph. Node names must match the variable names in the data.
+#' @param graph A symmetric adjacency matrix representing the undirected graph. Node names must match the variable names in the data.
 #'
 #' @param data A data frame with the observed variables. Variable names in the data must match the node names.
 #'
