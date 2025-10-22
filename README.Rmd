@@ -30,7 +30,7 @@ You can install the development version of DUE2 from [GitHub](https://github.com
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("ebanzato/MorbiGraph")
+devtools::install_github("ebanzato/DUE2")
 ```
 
 ## Versions of this package
