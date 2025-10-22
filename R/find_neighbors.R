@@ -2,7 +2,7 @@
 #'
 #' Finding neighbors of nodes in a graph.
 #'
-#' @param g A symmetric adjacency matrix representing the undirected graph.
+#' @param graph A symmetric adjacency matrix representing the undirected graph.
 #'
 #' @return a list. Each list element represents a graph node and contains its neighboring nodes.
 #'
