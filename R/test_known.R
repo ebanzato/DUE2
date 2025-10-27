@@ -44,12 +44,13 @@ test_known = function(graph, data, group, glm.family, cell.group, size.factor, p
   neigh = find_neighbors(graph)
   n_nodes = colnames(graph)
 
-  if(progressbar==TRUE){
-    pb = txtProgressBar(min = 0, max = length(n_nodes), style = 3)
+  if(progressbar){
+    pb = utils::txtProgressBar(min = 0, max = length(n_nodes), style = 3)
   }
 
 
   if(is.null(size.factor)){
+
     results = lapply(1:length(n_nodes), function(j) {
 
       n_neigh = neigh[[j]]
@@ -128,8 +129,8 @@ test_known = function(graph, data, group, glm.family, cell.group, size.factor, p
 
 
 
-      if(progressbar==TRUE){
-        setTxtProgressBar(pb, j)
+      if(progressbar){
+        util::setTxtProgressBar(pb, j)
       }
 
       # OUT
@@ -137,7 +138,9 @@ test_known = function(graph, data, group, glm.family, cell.group, size.factor, p
       return(res)
     }
     )
-  }else{
+
+    }else{
+
     results = lapply(1:length(n_nodes), function(j) {
 
       n_neigh = neigh[[j]]
@@ -215,9 +218,8 @@ test_known = function(graph, data, group, glm.family, cell.group, size.factor, p
       res.b[-1][which(n_nodes %in% neigh[[j]])] = coefbase[-1]
 
 
-
-      if(progressbar==TRUE){
-        setTxtProgressBar(pb, j)
+      if(progressbar){
+        utils::setTxtProgressBar(pb, j)
       }
 
       # OUT
