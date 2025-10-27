@@ -55,7 +55,7 @@
 #' DUE2(graph, data, group, glm.family='poisson', alpha=0.05, method.FDR='BH', method.FWER='holm')
 #'
 
-DUE2 = function(graph, data, group, glm.family, alpha=0.05, method.FDR='BH', method.FWER= 'holm', cell.group=NULL, size.factor=NULL, progressbar=TRUE){
+DUE2 = function(graph, data, group, glm.family, alpha=0.05, method.FDR='BH', method.FWER='holm', cell.group=NULL, size.factor=NULL, progressbar=TRUE){
 
   # Check if adjm names match
   if(!identical(colnames(graph), rownames(graph))){
@@ -81,7 +81,7 @@ DUE2 = function(graph, data, group, glm.family, alpha=0.05, method.FDR='BH', met
   }
 
   # Tests
-  test.res = test_known(graph, data, group, glm.family, cell.group, progressbar)
+  test.res = test_known(graph, data, group, glm.family, cell.group, size.factor, progressbar)
 
   # Two stages alg
   res = two_stages_pval(graph, test.pval = test.res$p.mat, method.FDR, method.FWER, alpha)
