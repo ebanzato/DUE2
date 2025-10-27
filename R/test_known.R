@@ -155,16 +155,16 @@ test_known = function(graph, data, group, glm.family, cell.group, size.factor, p
           formula_h0 = paste0(n_nodes[j], ' ~ 1')
           formula_h1 = paste0(n_nodes[j], ' ~ group')
           # models
-          mod_h0 = glm(formula_h0, data.frame(data,'group'=group), family=glm.family, offset=size.factor)  # model H0
-          mod_h1 = glm(formula_h1, data.frame(data,'group'=group), family=glm.family, offset=size.factor)  # model H1
+          mod_h0 = glm(formula_h0, data.frame(data,'group'=group), family=glm.family, offset=log(size.factor))  # model H0
+          mod_h1 = glm(formula_h1, data.frame(data,'group'=group), family=glm.family, offset=log(size.factor))  # model H1
           cg = 0
         }else{
           # define formula
           formula_h0 = paste0(n_nodes[j], ' ~ cgroup')
           formula_h1 = paste0(n_nodes[j], ' ~ cgroup + group')
           # models
-          mod_h0 = glm(formula_h0, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family, offset=size.factor)  # model H0
-          mod_h1 = glm(formula_h1, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family, offset=size.factor)  # model H1
+          mod_h0 = glm(formula_h0, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family, offset=log(size.factor))  # model H0
+          mod_h1 = glm(formula_h1, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family, offset=log(size.factor))  # model H1
           cg = length(levels(as.factor(cell.group)))-1
         }
 
@@ -175,16 +175,16 @@ test_known = function(graph, data, group, glm.family, cell.group, size.factor, p
           formula_h0 = paste0(n_nodes[j], ' ~ ', paste(sprintf("I(%s/size.factor)", neigh[[j]]), collapse='+', sep=''))
           formula_h1 = paste0(n_nodes[j], ' ~ (', paste(sprintf("I(%s/size.factor)", neigh[[j]]), collapse='+', sep=''),')*group')
           # models
-          mod_h0 = glm(formula_h0, data.frame(data,'group'=group), family=glm.family, offset=size.factor)  # model H0
-          mod_h1 = glm(formula_h1, data.frame(data,'group'=group), family=glm.family, offset=size.factor)  # model H1
+          mod_h0 = glm(formula_h0, data.frame(data,'group'=group), family=glm.family, offset=log(size.factor))  # model H0
+          mod_h1 = glm(formula_h1, data.frame(data,'group'=group), family=glm.family, offset=log(size.factor))  # model H1
           cg = 0
         }else{
           # define formula
           formula_h0 = paste0(n_nodes[j], ' ~ cgroup +', paste(sprintf("I(%s/size.factor)", neigh[[j]]), collapse='+', sep=''))
           formula_h1 = paste0(n_nodes[j], ' ~ cgroup + (', paste(sprintf("I(%s/size.factor)", neigh[[j]]), collapse='+', sep=''),')*group')
           # models
-          mod_h0 = glm(formula_h0, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family, offset=size.factor)  # model H0
-          mod_h1 = glm(formula_h1, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family, offset=size.factor)  # model H1
+          mod_h0 = glm(formula_h0, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family, offset=log(size.factor))  # model H0
+          mod_h1 = glm(formula_h1, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family, offset=log(size.factor))  # model H1
           cg = length(levels(as.factor(cell.group)))-1
         }
       }
