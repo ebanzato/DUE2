@@ -15,13 +15,15 @@
 #'
 #' @param glm.family Description of the distribution and link function to be used in the model.
 #'
-#' @param alpha The alpha level for conducting the test.
+#' @param alpha The alpha level for conducting the test. Default is 0.05.
 #'
-#' @param method.FDR Method for adjusting p-values in the first stage to control the FDR.
+#' @param method.FDR Method for adjusting p-values in the first stage to control the FDR. Default is 'BH'.
 #'
-#' @param method.FWER Method for adjusting p-values in the first stage to control the FWER.
+#' @param method.FWER Method for adjusting p-values in the first stage to control the FWER. Default is 'holm'.
 #'
 #' @param cell.group A vector of cell group labels, used as an extra covariate in the model and not for comparison, with length equal to the sample size.
+#'
+#' @param size.factor A vector of size factors with length equal to the sample size. It is used as an offset and to scale the covariates in the model.
 #'
 #' @param progressbar Logical, whether to display the progress bar. Default is TRUE.
 #'
@@ -53,7 +55,7 @@
 #' DUE2(graph, data, group, glm.family='poisson', alpha=0.05, method.FDR='BH', method.FWER='holm')
 #'
 
-DUE2 = function(graph, data, group, glm.family, alpha, method.FDR, method.FWER, cell.group=NULL, progressbar=TRUE){
+DUE2 = function(graph, data, group, glm.family, alpha=0.05, method.FDR='BH', method.FWER= 'holm', cell.group=NULL, size.factor=NULL, progressbar=TRUE){
 
   # Check if adjm names match
   if(!identical(colnames(graph), rownames(graph))){
