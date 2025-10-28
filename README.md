@@ -11,8 +11,8 @@ Because everything about this method revolves around two: two stages,
 two conditions, two perspectives on the same network.
 
 **DUE2** — from the Italian “due” (two) and the sound “due to” — is a
-two-step method for comparing two conditions and finding what changes
-**due to** them.
+two-step method for comparing graphs under two conditions and finding what changes
+*due to* them.
 
 The function `DUE2` implements a two-step algorithm that first performs
 a screening for equality of node-conditional distributions and then
