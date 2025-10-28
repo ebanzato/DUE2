@@ -119,7 +119,7 @@ test_known = function(graph, data, group, glm.family, cell.group, sf, progressba
 
 
       if(progressbar){
-        util::setTxtProgressBar(pb, j)
+        utils::setTxtProgressBar(pb, j)
       }
 
       # OUT
