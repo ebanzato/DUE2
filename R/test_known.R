@@ -13,27 +13,16 @@
 #'
 #' @param cell.group A vector of cell group labels, used as an extra covariate in the model and not for comparison, with length equal to the sample size.
 #'
-#' @param size.factor A vector of size factors with length equal to the sample size. It is used as an offset and to scale the covariates in the model.
+#' @param sf A vector of size factors with length equal to the sample size. It is used as an offset and to scale the covariates in the model.
 #'
 #' @param progressbar Logical, whether to display the progress bar. Default is TRUE.
 #'
 #' @return A list containing three elements: a matrix of p-values, a matrix of coefficients for the baseline group, and a matrix of coefficients for the differences between the two conditions.
 #'
 #'
-#' @examples
-#'
-#' set.seed(1)
-#' g <- as.matrix(igraph::as_adjacency_matrix(igraph::sample_gnp(6, 0.7)))
-#' colnames(g) <- rownames(g) <- paste0('X',1:6)
-#'
-#' g.df <- data.frame(matrix(rpois(600, 3), ncol=6)); colnames(g.df) = paste0('X',1:6)
-#'
-#' g.gr <- rep(c(0,1), each=50)
-#'
-#' test.g <- test_known(g, g.df, g.gr, glm.family='poisson', cell.group=NULL, progressbar=TRUE)
-#'
 
-test_known = function(graph, data, group, glm.family, cell.group, size.factor, progressbar){
+
+test_known = function(graph, data, group, glm.family, cell.group, sf, progressbar){
 
   if(glm.family=='quasipoisson'){
     test.aov = 'F'
@@ -49,7 +38,7 @@ test_known = function(graph, data, group, glm.family, cell.group, size.factor, p
   }
 
 
-  if(is.null(size.factor)){
+  if(is.null(sf)){
 
     results = lapply(1:length(n_nodes), function(j) {
 
@@ -68,16 +57,16 @@ test_known = function(graph, data, group, glm.family, cell.group, size.factor, p
           formula_h0 = paste0(n_nodes[j], ' ~ 1')
           formula_h1 = paste0(n_nodes[j], ' ~ group')
           # models
-          mod_h0 = glm(formula_h0, data.frame(data,'group'=group), family=glm.family)  # model H0
-          mod_h1 = glm(formula_h1, data.frame(data,'group'=group), family=glm.family)  # model H1
+          mod_h0 = stats::glm(formula_h0, data.frame(data,'group'=group), family=glm.family)  # model H0
+          mod_h1 = stats::glm(formula_h1, data.frame(data,'group'=group), family=glm.family)  # model H1
           cg = 0
         }else{
           # define formula
           formula_h0 = paste0(n_nodes[j], ' ~ cgroup')
           formula_h1 = paste0(n_nodes[j], ' ~ cgroup + group')
           # models
-          mod_h0 = glm(formula_h0, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family)  # model H0
-          mod_h1 = glm(formula_h1, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family)  # model H1
+          mod_h0 = stats::glm(formula_h0, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family)  # model H0
+          mod_h1 = stats::glm(formula_h1, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family)  # model H1
           cg = length(levels(as.factor(cell.group)))-1
         }
 
@@ -88,22 +77,22 @@ test_known = function(graph, data, group, glm.family, cell.group, size.factor, p
           formula_h0 = paste0(n_nodes[j], ' ~ ', paste(neigh[[j]], collapse='+', sep=''))
           formula_h1 = paste0(n_nodes[j], ' ~ (', paste(neigh[[j]], collapse='+', sep=''),')*group')
           # models
-          mod_h0 = glm(formula_h0, data.frame(data,'group'=group), family=glm.family)  # model H0
-          mod_h1 = glm(formula_h1, data.frame(data,'group'=group), family=glm.family)  # model H1
+          mod_h0 = stats::glm(formula_h0, data.frame(data,'group'=group), family=glm.family)  # model H0
+          mod_h1 = stats::glm(formula_h1, data.frame(data,'group'=group), family=glm.family)  # model H1
           cg = 0
         }else{
           # define formula
           formula_h0 = paste0(n_nodes[j], ' ~ cgroup +', paste(neigh[[j]], collapse='+', sep=''))
           formula_h1 = paste0(n_nodes[j], ' ~ cgroup + (', paste(neigh[[j]], collapse='+', sep=''),')*group')
           # models
-          mod_h0 = glm(formula_h0, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family)  # model H0
-          mod_h1 = glm(formula_h1, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family)  # model H1
+          mod_h0 = stats::glm(formula_h0, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family)  # model H0
+          mod_h1 = stats::glm(formula_h1, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family)  # model H1
           cg = length(levels(as.factor(cell.group)))-1
         }
       }
 
       # Test
-      test = anova(mod_h0, mod_h1, test=test.aov)
+      test = stats::anova(mod_h0, mod_h1, test=test.aov)
       if(test.aov=='Chisq'){
         res.p[1] = test$`Pr(>Chi)`[2]
       }
@@ -139,7 +128,7 @@ test_known = function(graph, data, group, glm.family, cell.group, size.factor, p
     }
     )
 
-    }else{
+  }else{
 
     results = lapply(1:length(n_nodes), function(j) {
 
@@ -158,16 +147,16 @@ test_known = function(graph, data, group, glm.family, cell.group, size.factor, p
           formula_h0 = paste0(n_nodes[j], ' ~ 1')
           formula_h1 = paste0(n_nodes[j], ' ~ group')
           # models
-          mod_h0 = glm(formula_h0, data.frame(data,'group'=group), family=glm.family, offset=log(size.factor))  # model H0
-          mod_h1 = glm(formula_h1, data.frame(data,'group'=group), family=glm.family, offset=log(size.factor))  # model H1
+          mod_h0 = stats::glm(formula_h0, data.frame(data,'group'=group), family=glm.family, offset=log(sf))  # model H0
+          mod_h1 = stats::glm(formula_h1, data.frame(data,'group'=group), family=glm.family, offset=log(sf))  # model H1
           cg = 0
         }else{
           # define formula
           formula_h0 = paste0(n_nodes[j], ' ~ cgroup')
           formula_h1 = paste0(n_nodes[j], ' ~ cgroup + group')
           # models
-          mod_h0 = glm(formula_h0, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family, offset=log(size.factor))  # model H0
-          mod_h1 = glm(formula_h1, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family, offset=log(size.factor))  # model H1
+          mod_h0 = stats::glm(formula_h0, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family, offset=log(sf))  # model H0
+          mod_h1 = stats::glm(formula_h1, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family, offset=log(sf))  # model H1
           cg = length(levels(as.factor(cell.group)))-1
         }
 
@@ -175,25 +164,25 @@ test_known = function(graph, data, group, glm.family, cell.group, size.factor, p
 
         if(is.null(cell.group)){
           # define formula
-          formula_h0 = paste0(n_nodes[j], ' ~ ', paste(sprintf("I(%s/size.factor)", neigh[[j]]), collapse='+', sep=''))
-          formula_h1 = paste0(n_nodes[j], ' ~ (', paste(sprintf("I(%s/size.factor)", neigh[[j]]), collapse='+', sep=''),')*group')
+          formula_h0 = paste0(n_nodes[j], ' ~ ', paste0('I(', neigh[[j]], '/sf)', collapse = '+'))
+          formula_h1 = paste0(n_nodes[j], ' ~ (', paste0('I(', neigh[[j]], '/sf)', collapse = '+'),')*group')
           # models
-          mod_h0 = glm(formula_h0, data.frame(data,'group'=group), family=glm.family, offset=log(size.factor))  # model H0
-          mod_h1 = glm(formula_h1, data.frame(data,'group'=group), family=glm.family, offset=log(size.factor))  # model H1
+          mod_h0 = stats::glm(formula_h0, data.frame(data,'group'=group), family=glm.family, offset=log(sf))  # model H0
+          mod_h1 = stats::glm(formula_h1, data.frame(data,'group'=group), family=glm.family, offset=log(sf))  # model H1
           cg = 0
         }else{
           # define formula
-          formula_h0 = paste0(n_nodes[j], ' ~ cgroup +', paste(sprintf("I(%s/size.factor)", neigh[[j]]), collapse='+', sep=''))
-          formula_h1 = paste0(n_nodes[j], ' ~ cgroup + (', paste(sprintf("I(%s/size.factor)", neigh[[j]]), collapse='+', sep=''),')*group')
+          formula_h0 = paste0(n_nodes[j], ' ~ cgroup +', paste0('I(', neigh[[j]], '/sf)', collapse = '+'))
+          formula_h1 = paste0(n_nodes[j], ' ~ cgroup + (', paste0('I(', neigh[[j]], '/sf)', collapse = '+'),')*group')
           # models
-          mod_h0 = glm(formula_h0, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family, offset=log(size.factor))  # model H0
-          mod_h1 = glm(formula_h1, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family, offset=log(size.factor))  # model H1
+          mod_h0 = stats::glm(formula_h0, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family, offset=log(sf))  # model H0
+          mod_h1 = stats::glm(formula_h1, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family, offset=log(sf))  # model H1
           cg = length(levels(as.factor(cell.group)))-1
         }
       }
 
       # Test
-      test = anova(mod_h0, mod_h1, test=test.aov)
+      test = stats::anova(mod_h0, mod_h1, test=test.aov)
       if(test.aov=='Chisq'){
         res.p[1] = test$`Pr(>Chi)`[2]
       }

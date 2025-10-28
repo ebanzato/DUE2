@@ -6,14 +6,7 @@
 #'
 #' @return a list. Each list element represents a graph node and contains its neighboring nodes.
 #'
-#' @examples
-#'
-#' set.seed(1)
-#' g <- as.matrix(igraph::as_adjacency_matrix(igraph::sample_gnp(6, 0.7)))
-#' colnames(g) <- rownames(g) <- paste0('X',1:6)
-#'
-#' ng <- find_neighbors(g)
-#'
+
 
 find_neighbors = function(graph){
 

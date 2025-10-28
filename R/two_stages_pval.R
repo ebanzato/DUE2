@@ -27,7 +27,7 @@ two_stages_pval = function(graph, test.pval, method.FDR, method.FWER, alpha){
   p = ncol(graph)
 
   # Stage 1: screening (FDR)
-  stage1 = ifelse(p.adjust(test.pval[,1], method=method.FDR) <= alpha, 1, 0)
+  stage1 = ifelse(stats::p.adjust(test.pval[,1], method=method.FDR) <= alpha, 1, 0)
 
   # Stage2: confirmatory (FWER)
   if(sum(stage1)>0){
@@ -38,7 +38,7 @@ two_stages_pval = function(graph, test.pval, method.FDR, method.FWER, alpha){
       if(stage1[r] == 0){
         out = c(0, rep(NA, p+1))
       }else{
-        out = c(1,ifelse(p.adjust(test.pval[r,-1], method=method.FWER) <= alpha2, 1, 0))
+        out = c(1,ifelse(stats::p.adjust(test.pval[r,-1], method=method.FWER) <= alpha2, 1, 0))
       }
       names(out) = sub('X','',colnames(test.pval))
       out

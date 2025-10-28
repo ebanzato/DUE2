@@ -23,7 +23,7 @@
 #'
 #' @param cell.group A vector of cell group labels, used as an extra covariate in the model and not for comparison, with length equal to the sample size.
 #'
-#' @param size.factor A vector of size factors with length equal to the sample size. It is used as an offset and to scale the covariates in the model.
+#' @param sf A vector of size factors with length equal to the sample size. It is used as an offset and to scale the covariates in the model.
 #'
 #' @param progressbar Logical, whether to display the progress bar. Default is TRUE.
 #'
@@ -40,22 +40,9 @@
 #'
 #' 4. base_coef: coefficients of the reference condition.
 #'
-#' @examples
-#' #'
-#' set.seed(1)
-#' graph <- as.matrix(igraph::as_adjacency_matrix(igraph::sample_gnp(6, 0.7)))
-#' colnames(graph) <- rownames(graph) <- paste0('X',1:6)
-#'
-#' data1 <- data.frame(matrix(rpois(600, 3), ncol=6)); colnames(data1) = paste0('X',1:6)
-#' data2 <- data.frame(matrix(rpois(600, 5), ncol=6)); colnames(data2) = paste0('X',1:6)
-#' data  <- rbind(data1, data2)
-#'
-#' group <- rep(c(0,1), each=100)
-#'
-#' DUE2(graph, data, group, glm.family='poisson', alpha=0.05, method.FDR='BH', method.FWER='holm')
-#'
 
-DUE2 = function(graph, data, group, glm.family, alpha=0.05, method.FDR='BH', method.FWER='holm', cell.group=NULL, size.factor=NULL, progressbar=TRUE){
+
+DUE2 = function(graph, data, group, glm.family, alpha=0.05, method.FDR='BH', method.FWER='holm', cell.group=NULL, sf=NULL, progressbar=TRUE){
 
   # Check if adjm names match
   if(!identical(colnames(graph), rownames(graph))){
@@ -81,7 +68,7 @@ DUE2 = function(graph, data, group, glm.family, alpha=0.05, method.FDR='BH', met
   }
 
   # Tests
-  test.res = test_known(graph, data, group, glm.family, cell.group, size.factor, progressbar)
+  test.res = test_known(graph, data, group, glm.family, cell.group, sf, progressbar)
 
   # Two stages alg
   res = two_stages_pval(graph, test.pval = test.res$p.mat, method.FDR, method.FWER, alpha)
