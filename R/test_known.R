@@ -147,16 +147,16 @@ test_known = function(graph, data, group, glm.family, cell.group, sf, progressba
           formula_h0 = paste0(n_nodes[j], ' ~ 1')
           formula_h1 = paste0(n_nodes[j], ' ~ group')
           # models
-          mod_h0 = stats::glm(formula_h0, data.frame(data,'group'=group), family=glm.family, offset=log(sf))  # model H0
-          mod_h1 = stats::glm(formula_h1, data.frame(data,'group'=group), family=glm.family, offset=log(sf))  # model H1
+          mod_h0 = stats::glm(formula_h0, data.frame(data,'group'=group, 'sf'=sf), family=glm.family, offset=log(sf))  # model H0
+          mod_h1 = stats::glm(formula_h1, data.frame(data,'group'=group, 'sf'=sf), family=glm.family, offset=log(sf))  # model H1
           cg = 0
         }else{
           # define formula
           formula_h0 = paste0(n_nodes[j], ' ~ cgroup')
           formula_h1 = paste0(n_nodes[j], ' ~ cgroup + group')
           # models
-          mod_h0 = stats::glm(formula_h0, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family, offset=log(sf))  # model H0
-          mod_h1 = stats::glm(formula_h1, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family, offset=log(sf))  # model H1
+          mod_h0 = stats::glm(formula_h0, data.frame(data,'group'=group,'cgroup'=cell.group, 'sf'=sf), family=glm.family, offset=log(sf))  # model H0
+          mod_h1 = stats::glm(formula_h1, data.frame(data,'group'=group,'cgroup'=cell.group, 'sf'=sf), family=glm.family, offset=log(sf))  # model H1
           cg = length(levels(as.factor(cell.group)))-1
         }
 
@@ -167,16 +167,16 @@ test_known = function(graph, data, group, glm.family, cell.group, sf, progressba
           formula_h0 = paste0(n_nodes[j], ' ~ ', paste0('I(', neigh[[j]], '/sf)', collapse = '+'))
           formula_h1 = paste0(n_nodes[j], ' ~ (', paste0('I(', neigh[[j]], '/sf)', collapse = '+'),')*group')
           # models
-          mod_h0 = stats::glm(formula_h0, data.frame(data,'group'=group), family=glm.family, offset=log(sf))  # model H0
-          mod_h1 = stats::glm(formula_h1, data.frame(data,'group'=group), family=glm.family, offset=log(sf))  # model H1
+          mod_h0 = stats::glm(formula_h0, data.frame(data,'group'=group, 'sf'=sf), family=glm.family, offset=log(sf))  # model H0
+          mod_h1 = stats::glm(formula_h1, data.frame(data,'group'=group, 'sf'=sf), family=glm.family, offset=log(sf))  # model H1
           cg = 0
         }else{
           # define formula
           formula_h0 = paste0(n_nodes[j], ' ~ cgroup +', paste0('I(', neigh[[j]], '/sf)', collapse = '+'))
           formula_h1 = paste0(n_nodes[j], ' ~ cgroup + (', paste0('I(', neigh[[j]], '/sf)', collapse = '+'),')*group')
           # models
-          mod_h0 = stats::glm(formula_h0, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family, offset=log(sf))  # model H0
-          mod_h1 = stats::glm(formula_h1, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family, offset=log(sf))  # model H1
+          mod_h0 = stats::glm(formula_h0, data.frame(data,'group'=group,'cgroup'=cell.group, 'sf'=sf), family=glm.family, offset=log(sf))  # model H0
+          mod_h1 = stats::glm(formula_h1, data.frame(data,'group'=group,'cgroup'=cell.group, 'sf'=sf), family=glm.family, offset=log(sf))  # model H1
           cg = length(levels(as.factor(cell.group)))-1
         }
       }
