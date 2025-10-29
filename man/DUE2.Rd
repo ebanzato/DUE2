@@ -13,7 +13,7 @@ DUE2(
   method.FDR = "BH",
   method.FWER = "holm",
   cell.group = NULL,
-  size.factor = NULL,
+  sf = NULL,
   progressbar = TRUE
 )
 }
@@ -34,7 +34,7 @@ DUE2(
 
 \item{cell.group}{A vector of cell group labels, used as an extra covariate in the model and not for comparison, with length equal to the sample size.}
 
-\item{size.factor}{A vector of size factors with length equal to the sample size. It is used as an offset and to scale the covariates in the model.}
+\item{sf}{A vector of size factors with length equal to the sample size. It is used as an offset and to scale the covariates in the model.}
 
 \item{progressbar}{Logical, whether to display the progress bar. Default is TRUE.}
 }

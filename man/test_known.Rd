@@ -4,15 +4,7 @@
 \alias{test_known}
 \title{Local regressions and tests}
 \usage{
-test_known(
-  graph,
-  data,
-  group,
-  glm.family,
-  cell.group,
-  size.factor,
-  progressbar
-)
+test_known(graph, data, group, glm.family, cell.group, sf, progressbar)
 }
 \arguments{
 \item{graph}{A symmetric adjacency matrix representing the undirected graph. Node names must match the variable names in the data.}
@@ -25,7 +17,7 @@ test_known(
 
 \item{cell.group}{A vector of cell group labels, used as an extra covariate in the model and not for comparison, with length equal to the sample size.}
 
-\item{size.factor}{A vector of size factors with length equal to the sample size. It is used as an offset and to scale the covariates in the model.}
+\item{sf}{A vector of size factors with length equal to the sample size. It is used as an offset and to scale the covariates in the model.}
 
 \item{progressbar}{Logical, whether to display the progress bar. Default is TRUE.}
 }

@@ -59,6 +59,16 @@ DUE2 = function(graph, data, group, glm.family, alpha=0.05, method.FDR='BH', met
     stop('Not all variables in \'graph\' are in \'data\' OR no match between nodes and variables names')
   }
 
+  # Check for variables that are all zeros
+  if(sum(colSums(df) == 0) > 0){
+    stop('One or more variables contain only zeros.')
+  }
+
+  # Check whether there are variables that contain only one unique value.
+  if(sum(apply(df,2,function(x) length(unique(x))) == 1) > 0){
+    stop('One or more variables contain only one unique value.')
+  }
+
   # Group and cell group as factors
   if(!is.null(group)){
     group = as.factor(group)
