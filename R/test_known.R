@@ -38,7 +38,7 @@ test_known = function(graph, data, group, glm.family, cell.group, size.factor, p
   }
 
 
-  if(is.null(sf)){
+  if(is.null(size.factor)){
 
     results = lapply(1:length(n_nodes), function(j) {
 
