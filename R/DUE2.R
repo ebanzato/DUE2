@@ -23,7 +23,7 @@
 #'
 #' @param cell.group A vector of cell group labels, used as an extra covariate in the model and not for comparison, with length equal to the sample size.
 #'
-#' @param sf A vector of size factors with length equal to the sample size. It is used as an offset and to scale the covariates in the model.
+#' @param size.factor A vector of size factors with length equal to the sample size. It is used as an offset and to scale the covariates in the model.
 #'
 #' @param progressbar Logical, whether to display the progress bar. Default is TRUE.
 #'
@@ -42,7 +42,7 @@
 #'
 
 
-DUE2 = function(graph, data, group, glm.family, alpha=0.05, method.FDR='BH', method.FWER='holm', cell.group=NULL, sf=NULL, progressbar=TRUE){
+DUE2 = function(graph, data, group, glm.family, alpha=0.05, method.FDR='BH', method.FWER='holm', cell.group=NULL, size.factor=NULL, progressbar=TRUE){
 
   # Check if adjm names match
   if(!identical(colnames(graph), rownames(graph))){
@@ -68,7 +68,7 @@ DUE2 = function(graph, data, group, glm.family, alpha=0.05, method.FDR='BH', met
   }
 
   # Tests
-  test.res = test_known(graph, data, group, glm.family, cell.group, sf, progressbar)
+  test.res = test_known(graph, data, group, glm.family, cell.group, size.factor, progressbar)
 
   # Two stages alg
   res = two_stages_pval(graph, test.pval = test.res$p.mat, method.FDR, method.FWER, alpha)
