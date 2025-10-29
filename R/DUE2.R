@@ -60,12 +60,12 @@ DUE2 = function(graph, data, group, glm.family, alpha=0.05, method.FDR='BH', met
   }
 
   # Check for variables that are all zeros
-  if(sum(colSums(df) == 0) > 0){
+  if(sum(colSums(data) == 0) > 0){
     stop('One or more variables contain only zeros.')
   }
 
   # Check whether there are variables that contain only one unique value.
-  if(sum(apply(df,2,function(x) length(unique(x))) == 1) > 0){
+  if(sum(apply(data, 2, function(x) length(unique(x))) == 1) > 0){
     stop('One or more variables contain only one unique value.')
   }
 
