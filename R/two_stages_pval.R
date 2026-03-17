@@ -20,6 +20,8 @@
 #' 2. Difference in the mean parameter of the node in the row: 0 for no difference, 1 for a difference, NA if the first column is 0.
 #' 3-(p+2). Differences in the association parameters between the node in the row and nodes in the columns: 0 for no difference, 1 for a difference, NA if not tested.
 #'
+#' @export
+#'
 
 
 two_stages_pval = function(graph, test.pval, method.FDR, method.FWER, alpha){

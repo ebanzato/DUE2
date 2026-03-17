@@ -40,6 +40,8 @@
 #'
 #' 4. base_coef: coefficients of the reference condition.
 #'
+#' @export
+#'
 
 
 DUE2 = function(graph, data, group, glm.family, alpha=0.05, method.FDR='BH', method.FWER='holm', cell.group=NULL, sf=NULL, progressbar=TRUE){
@@ -78,13 +80,20 @@ DUE2 = function(graph, data, group, glm.family, alpha=0.05, method.FDR='BH', met
   }
 
   # Tests
-  test.res = test_known(graph, data, group, glm.family, cell.group, sf, progressbar)
 
-  # Two stages alg
+  if(glm.family=='nb'){
+    test.res = test_nb(graph, data, group, glm.family, cell.group, sf, progressbar)
+  }
+
+  if(glm.family == 'poisson' | glm.family=='quasipoisson'){
+    test.res = test_known(graph, data, group, glm.family, cell.group, sf, progressbar)
+  }
+
+
+  # Two stages algorithm
   res = two_stages_pval(graph, test.pval = test.res$p.mat, method.FDR, method.FWER, alpha)
 
   # OUT
-
   out = list('g.diff' = res, 'delta_pvalues' = test.res$p.mat,
              'delta_coef' = test.res$c.mat, 'base_coef'= test.res$b.mat)
   return(out)

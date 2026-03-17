@@ -1,5 +1,5 @@
 
-#' Local regressions and tests
+#' Local regressions and tests - Negative Binomial
 #'
 #' Function to fit node-conditional models for comparison and calculate p-values for the two stages.
 #'
@@ -23,13 +23,8 @@
 #'
 
 
-test_known = function(graph, data, group, glm.family, cell.group, sf, progressbar){
+test_nb = function(graph, data, group, glm.family, cell.group, sf, progressbar){
 
-  if(glm.family=='quasipoisson'){
-    test.aov = 'F'
-  }else{
-    test.aov = 'Chisq'
-  }
 
   neigh = find_neighbors(graph)
   n_nodes = colnames(graph)
@@ -58,16 +53,16 @@ test_known = function(graph, data, group, glm.family, cell.group, sf, progressba
           formula_h0 = paste0(n_nodes[j], ' ~ 1')
           formula_h1 = paste0(n_nodes[j], ' ~ group')
           # models
-          mod_h0 = stats::glm(formula_h0, data.frame(data,'group'=group), family=glm.family)  # model H0
-          mod_h1 = stats::glm(formula_h1, data.frame(data,'group'=group), family=glm.family)  # model H1
+          mod_h0 = MASS::glm.nb(formula_h0, data.frame(data,'group'=group))  # model H0
+          mod_h1 = MASS::glm.nb(formula_h1, data.frame(data,'group'=group))  # model H1
           cg = 0
         }else{
           # define formula
           formula_h0 = paste0(n_nodes[j], ' ~ cgroup')
           formula_h1 = paste0(n_nodes[j], ' ~ cgroup + group')
           # models
-          mod_h0 = stats::glm(formula_h0, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family)  # model H0
-          mod_h1 = stats::glm(formula_h1, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family)  # model H1
+          mod_h0 = MASS::glm.nb(formula_h0, data.frame(data,'group'=group,'cgroup'=cell.group))  # model H0
+          mod_h1 = MASS::glm.nb(formula_h1, data.frame(data,'group'=group,'cgroup'=cell.group))  # model H1
           cg = length(levels(as.factor(cell.group)))-1
         }
 
@@ -78,28 +73,25 @@ test_known = function(graph, data, group, glm.family, cell.group, sf, progressba
           formula_h0 = paste0(n_nodes[j], ' ~ ', paste(neigh[[j]], collapse='+', sep=''))
           formula_h1 = paste0(n_nodes[j], ' ~ (', paste(neigh[[j]], collapse='+', sep=''),')*group')
           # models
-          mod_h0 = stats::glm(formula_h0, data.frame(data,'group'=group), family=glm.family)  # model H0
-          mod_h1 = stats::glm(formula_h1, data.frame(data,'group'=group), family=glm.family)  # model H1
+          mod_h0 = MASS::glm.nb(formula_h0, data.frame(data,'group'=group))  # model H0
+          mod_h1 = MASS::glm.nb(formula_h1, data.frame(data,'group'=group))  # model H1
           cg = 0
         }else{
           # define formula
           formula_h0 = paste0(n_nodes[j], ' ~ cgroup +', paste(neigh[[j]], collapse='+', sep=''))
           formula_h1 = paste0(n_nodes[j], ' ~ cgroup + (', paste(neigh[[j]], collapse='+', sep=''),')*group')
           # models
-          mod_h0 = stats::glm(formula_h0, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family)  # model H0
-          mod_h1 = stats::glm(formula_h1, data.frame(data,'group'=group,'cgroup'=cell.group), family=glm.family)  # model H1
+          mod_h0 = MASS::glm.nb(formula_h0, data.frame(data,'group'=group,'cgroup'=cell.group))  # model H0
+          mod_h1 = MASS::glm.nb(formula_h1, data.frame(data,'group'=group,'cgroup'=cell.group))  # model H1
           cg = length(levels(as.factor(cell.group)))-1
         }
       }
 
       # Test
-      test = stats::anova(mod_h0, mod_h1, test=test.aov)
-      if(test.aov=='Chisq'){
-        res.p[1] = test$`Pr(>Chi)`[2]
-      }
-      if(test.aov=='F'){
-        res.p[1] = test$`Pr(>F)`[2]
-      }
+      test = stats::anova(mod_h0, mod_h1)
+
+      res.p[1] = test$`Pr(Chi)`[2]
+
       pvalbeta = summary(mod_h1)$coefficients[-c(1:(1+cg+length(n_neigh))),4]
       # out
       res.p[2] = pvalbeta[1]
@@ -116,7 +108,6 @@ test_known = function(graph, data, group, glm.family, cell.group, sf, progressba
       # out
       res.b[1] = coefbase[1]
       res.b[-1][which(n_nodes %in% neigh[[j]])] = coefbase[-1]
-
 
 
       if(progressbar){
@@ -145,19 +136,19 @@ test_known = function(graph, data, group, glm.family, cell.group, sf, progressba
 
         if(is.null(cell.group)){
           # define formula
-          formula_h0 = paste0(n_nodes[j], ' ~ 1')
-          formula_h1 = paste0(n_nodes[j], ' ~ group')
+          formula_h0 = paste0(n_nodes[j], ' ~ 1 + offset(log(sf))')
+          formula_h1 = paste0(n_nodes[j], ' ~ group + offset(log(sf))')
           # models
-          mod_h0 = stats::glm(formula_h0, data.frame(data,'group'=group, 'sf'=sf), family=glm.family, offset=log(sf))  # model H0
-          mod_h1 = stats::glm(formula_h1, data.frame(data,'group'=group, 'sf'=sf), family=glm.family, offset=log(sf))  # model H1
+          mod_h0 = MASS::glm.nb(formula_h0, data.frame(data,'group'=group, 'sf'=sf))  # model H0
+          mod_h1 = MASS::glm.nb(formula_h1, data.frame(data,'group'=group, 'sf'=sf))  # model H1
           cg = 0
         }else{
           # define formula
-          formula_h0 = paste0(n_nodes[j], ' ~ cgroup')
-          formula_h1 = paste0(n_nodes[j], ' ~ cgroup + group')
+          formula_h0 = paste0(n_nodes[j], ' ~ cgroup + offset(log(sf))')
+          formula_h1 = paste0(n_nodes[j], ' ~ cgroup + group + offset(log(sf))')
           # models
-          mod_h0 = stats::glm(formula_h0, data.frame(data,'group'=group,'cgroup'=cell.group, 'sf'=sf), family=glm.family, offset=log(sf))  # model H0
-          mod_h1 = stats::glm(formula_h1, data.frame(data,'group'=group,'cgroup'=cell.group, 'sf'=sf), family=glm.family, offset=log(sf))  # model H1
+          mod_h0 = MASS::glm.nb(formula_h0, data.frame(data,'group'=group,'cgroup'=cell.group, 'sf'=sf))  # model H0
+          mod_h1 = MASS::glm.nb(formula_h1, data.frame(data,'group'=group,'cgroup'=cell.group, 'sf'=sf))  # model H1
           cg = length(levels(as.factor(cell.group)))-1
         }
 
@@ -165,31 +156,28 @@ test_known = function(graph, data, group, glm.family, cell.group, sf, progressba
 
         if(is.null(cell.group)){
           # define formula
-          formula_h0 = paste0(n_nodes[j], ' ~ ', paste0('I(', neigh[[j]], '/sf)', collapse = '+'))
-          formula_h1 = paste0(n_nodes[j], ' ~ (', paste0('I(', neigh[[j]], '/sf)', collapse = '+'),')*group')
+          formula_h0 = paste0(n_nodes[j], ' ~ ', paste0('I(', neigh[[j]], '/sf)', collapse = '+'), '+ offset(log(sf))')
+          formula_h1 = paste0(n_nodes[j], ' ~ (', paste0('I(', neigh[[j]], '/sf)', collapse = '+'),')*group + offset(log(sf))')
           # models
-          mod_h0 = stats::glm(formula_h0, data.frame(data,'group'=group, 'sf'=sf), family=glm.family, offset=log(sf))  # model H0
-          mod_h1 = stats::glm(formula_h1, data.frame(data,'group'=group, 'sf'=sf), family=glm.family, offset=log(sf))  # model H1
+          mod_h0 = MASS::glm.nb(formula_h0, data.frame(data,'group'=group, 'sf'=sf))  # model H0
+          mod_h1 = MASS::glm.nb(formula_h1, data.frame(data,'group'=group, 'sf'=sf))  # model H1
           cg = 0
         }else{
           # define formula
-          formula_h0 = paste0(n_nodes[j], ' ~ cgroup +', paste0('I(', neigh[[j]], '/sf)', collapse = '+'))
-          formula_h1 = paste0(n_nodes[j], ' ~ cgroup + (', paste0('I(', neigh[[j]], '/sf)', collapse = '+'),')*group')
+          formula_h0 = paste0(n_nodes[j], ' ~ cgroup +', paste0('I(', neigh[[j]], '/sf)', collapse = '+'), '+ offset(log(sf))')
+          formula_h1 = paste0(n_nodes[j], ' ~ cgroup + (', paste0('I(', neigh[[j]], '/sf)', collapse = '+'),')*group + offset(log(sf))')
           # models
-          mod_h0 = stats::glm(formula_h0, data.frame(data,'group'=group,'cgroup'=cell.group, 'sf'=sf), family=glm.family, offset=log(sf))  # model H0
-          mod_h1 = stats::glm(formula_h1, data.frame(data,'group'=group,'cgroup'=cell.group, 'sf'=sf), family=glm.family, offset=log(sf))  # model H1
+          mod_h0 = MASS::glm.nb(formula_h0, data.frame(data,'group'=group,'cgroup'=cell.group, 'sf'=sf))  # model H0
+          mod_h1 = MASS::glm.nb(formula_h1, data.frame(data,'group'=group,'cgroup'=cell.group, 'sf'=sf))  # model H1
           cg = length(levels(as.factor(cell.group)))-1
         }
       }
 
       # Test
-      test = stats::anova(mod_h0, mod_h1, test=test.aov)
-      if(test.aov=='Chisq'){
-        res.p[1] = test$`Pr(>Chi)`[2]
-      }
-      if(test.aov=='F'){
-        res.p[1] = test$`Pr(>F)`[2]
-      }
+      test = stats::anova(mod_h0, mod_h1)
+
+      res.p[1] = test$`Pr(Chi)`[2]
+
       pvalbeta = summary(mod_h1)$coefficients[-c(1:(1+cg+length(n_neigh))),4]
       # out
       res.p[2] = pvalbeta[1]
@@ -219,6 +207,7 @@ test_known = function(graph, data, group, glm.family, cell.group, sf, progressba
     )
   }
 
+
   out.p = t(sapply(results, function(x) c(x$p.mat)))
   rownames(out.p) = n_nodes
 
@@ -233,3 +222,4 @@ test_known = function(graph, data, group, glm.family, cell.group, sf, progressba
   return(out)
 
 }
+

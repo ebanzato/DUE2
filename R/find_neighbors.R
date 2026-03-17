@@ -6,6 +6,7 @@
 #'
 #' @return a list. Each list element represents a graph node and contains its neighboring nodes.
 #'
+#' @export
 
 
 find_neighbors = function(graph){
