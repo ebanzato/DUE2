@@ -47,10 +47,8 @@ two_stages_pval = function(graph, test.pval, method.FDR, method.FWER, alpha){
     }))
   }else{
     stage2 = cbind(stage1, matrix(NA, ncol=p+1, nrow=p))
-    # colnames(stage2) = sub('X','',colnames(test.pval))
-  }
 
-  # rownames(stage2) = sub('X','',rownames(test.pval))
+  }
 
   # out
   return(stage2)
